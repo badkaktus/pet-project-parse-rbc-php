@@ -14,7 +14,7 @@ return [
         'dbname' => 'rbc_parse',
         'user' => 'rbc_user',
         'password' => 'rbc_password',
-        'host' => '127.0.0.1',
+        'host' => 'db',
         'driver' => 'pdo_mysql',
         'charset' => 'utf8',
         'options' => [

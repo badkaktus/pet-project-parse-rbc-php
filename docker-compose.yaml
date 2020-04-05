@@ -1,35 +1,47 @@
-web:
-  image: nginx:latest
-  ports:
-    - "8080:80"
-  volumes:
-    - ./app:/var/www/
-    - ./site.conf:/etc/nginx/conf.d/site.conf
-  links:
-    - php
-php:
-  image: vladgh/fpm
-  volumes:
-    - ./app:/var/www/
-  links:
-    - db
-db:
-  image: mysql:5.7
-  restart: always
-  environment:
-    MYSQL_DATABASE: 'rbc_parse'
-#    # So you don't have to use root, but you can if you like
-    MYSQL_USER: 'rbc_user'
-    # You can use whatever password you like
-    MYSQL_PASSWORD: 'rbc_password'
-    # Password for root access
-    MYSQL_ROOT_PASSWORD: 'root_password'
-  ports:
-    # <Port exposed> : < MySQL Port running inside container>
-    - '3306:3306'
-  expose:
-    # Opens port 3306 on the container
-    - '3306'
-    # Where our data will be persisted
-  volumes:
-    - rbc-parse-db:/var/lib/mysql
+version: "2"
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/
+      - ./site.conf:/etc/nginx/conf.d/site.conf
+    links:
+      - php
+  php:
+    image: vladgh/fpm
+    volumes:
+      - ./app:/var/www/
+    links:
+      - db
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'rbc_parse'
+      #    # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'rbc_user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'rbc_password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'root_password'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+    volumes:
+      - rbc-parse-db:/var/lib/mysql
+  composer:
+    restart: 'no'
+    depends_on:
+      - "php"
+    image: composer:latest
+    command: install
+    volumes:
+      - ./app:/app
+volumes:
+  rbc-parse-db:
