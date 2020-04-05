@@ -1,0 +1,16 @@
+{{ include('header.twig') }}
+
+    <div style="display: block;">
+        <h3>{{ news.title }}</h3>
+        {% if news.img %}
+            <img src="{{ news.img }}" style="width: 90%; margin: 20px 0;">
+        {% endif %}
+        <p>
+            {{ news.news|raw }}
+        </p>
+        <p style="text-align: center;">
+            <a href="/">Вернуться назад</a>
+        </p>
+    </div>
+
+{{ include('footer.twig') }}

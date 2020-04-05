@@ -1,0 +1,15 @@
+{{ include('header.twig') }}
+
+{% for item in news %}
+    <div style="display: block; margin-bottom: 20px;">
+        <h3>{{ item.title }}</h3>
+        {{ item.news|slice(0,200)|raw }}...
+        <div style="display: block; margin-top: 3px;">
+            <a href="/news/{{ item.id }}">
+                <button style="margin-left: 0;">Подробнее</button>
+            </a>
+        </div>
+    </div>
+{% endfor %}
+
+{{ include('footer.twig') }}

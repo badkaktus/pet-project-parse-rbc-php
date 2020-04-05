@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use \App\Command\ParseNewsCommand;
+use Pimple\Container;
+
+$conf = require __DIR__ . '/../config/db.php';
+
+$app = new Application();
+
+$di = new Container();
+
+$di['db'] = \Doctrine\DBAL\DriverManager::getConnection($conf['cli']);
+
+$app->addCommands([
+        new ParseNewsCommand($di)
+]
+);
+
+$app->run();
