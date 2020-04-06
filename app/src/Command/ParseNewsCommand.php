@@ -1,5 +1,4 @@
 <?php
-// src/Command/CreateUserCommand.php
 namespace App\Command;
 
 use Pimple\Container;
@@ -34,8 +33,10 @@ class ParseNewsCommand extends Command
 
         $curl->get('https://www.rbc.ru');
 
+        // регулярка для получения списка новостей из блока слева
         $re = '/<a href="([\S]*)"[\s\d\w\=\"\-]*>\s*<span class="news-feed__item__title[\s\w\-\_]*">\s*([А-Яа-яЁё\s\d\W]*)<\/span>/m';
 
+        // если что-то пошло не так
         if ($curl->getHttpStatus() !== 200) {
             $output->write('Something goes wrong');
             return 0;
@@ -44,34 +45,36 @@ class ParseNewsCommand extends Command
         $news = [];
         preg_match_all($re, $curl->getResponse(),$matches);
 
-
-//        $fullNewsRegex = '/<div class="article__text article__text_free" itemprop="articleBody">([\d\s\SA-Za-zА-Яа-яёЁ]+)<div class="article__tags">/m';
-        $fullNewsRegex = '/<div class="article__text[\s\w_\-]*"\s+itemprop="articleBody">([\d\s\SA-Za-zА-Яа-яёЁ]+)<div class="(article__clear|article__tags|subscribe-infographic)[\s\w\-_]*">/m';
+        // регулярка для парсинга тела новости
+        $fullNewsRegex = '/<div class="article__text[\s\w_\-]*"\s+itemprop="articleBody">([\d\s\SA-Za-zА-Яа-яёЁ]+)<div class="(article__clear|article__tags|subscribe-infographic|article__authors)[\s\w\-_]*">/m';
+        // регулярка для парсинга текста новости
         $fullTextRegex = '/<p>(.*?)<\/p>/m';
+        // регулярка для парсинка картинки для новости
         $imgRegex = '/<img src="([\S]+)"[\s\w="\-_]*class="article__main-image[\s\w\-_]*"[\s\w="\-_]*\/>/m';
 
-        foreach ($matches[1] as $i => $v) {
+        $curlNews = new Curl();
+        $curlNews->setOpt(CURLOPT_FOLLOWLOCATION, 1);
 
+        // обходим все новости
+        foreach ($matches[1] as $i => $v) {
 
             $news[] = [
                     'url' => trim($v),
                     'title' => trim($matches[2][$i])
             ];
 
-            $curlNews = new Curl();
-            $curlNews->setOpt(CURLOPT_FOLLOWLOCATION, 1);
+
             $curlNews->get($news[$i]['url']);
             preg_match($fullNewsRegex, $curlNews->getResponse(), $textMatch);
 
-
-            $clearText = strip_tags($textMatch[0], '<p><img>');
+            // очищаем от лишних тегов
+            $clearText = strip_tags($textMatch[0], '<p>');
 
             preg_match($imgRegex, $curlNews->getResponse(), $imgUrl);
 
             preg_match_all($fullTextRegex, $clearText, $clearTextMatch);
 
             $news[$i]['cleartext'] = (is_array($clearTextMatch[1])) ? implode(" ", $clearTextMatch[1]) : "";
-            $news[$i]['http_status'] = $curlNews->getHttpStatus();
 
             $insertData = [
                 'title' => $news[$i]['title'],
@@ -86,9 +89,10 @@ class ParseNewsCommand extends Command
                 'latest_news', $insertData
             );
 
-            $curlNews->close();
 
         }
+
+        $curlNews->close();
 
         $curl->close();
         return 0;

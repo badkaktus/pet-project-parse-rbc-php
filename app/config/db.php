@@ -10,26 +10,13 @@
  */
 
 return [
-    'cli' => [
-        'dbname' => 'rbc_parse',
-        'user' => 'rbc_user',
-        'password' => 'rbc_password',
-        'host' => 'db',
-        'driver' => 'pdo_mysql',
-        'charset' => 'utf8',
-        'options' => [
-            1002 => "SET NAMES 'UTF8' COLLATE 'utf8_unicode_ci'"
-        ]
-    ],
-    'app' => [
-        'dbname' => 'rbc_parse',
-        'user' => 'rbc_user',
-        'password' => 'rbc_password',
-        'host' => 'db',
-        'driver' => 'pdo_mysql',
-        'charset' => 'utf8',
-        'options' => [
-            1002 => "SET NAMES 'UTF8' COLLATE 'utf8_unicode_ci'"
-        ]
+    'dbname' => 'rbc_parse',
+    'user' => 'rbc_user',
+    'password' => 'rbc_password',
+    'host' => 'db',
+    'driver' => 'pdo_mysql',
+    'charset' => 'utf8',
+    'options' => [
+        1002 => "SET NAMES 'UTF8' COLLATE 'utf8_unicode_ci'"
     ]
 ];

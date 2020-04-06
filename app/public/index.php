@@ -10,13 +10,14 @@
  */
 
 require __DIR__ . '/../vendor/autoload.php';
-$conf = require __DIR__ . '/../config/db.php';
+$dbParams = require __DIR__ . '/../config/db.php';
 
 use Pimple\Container;
 use Twig\Loader\FilesystemLoader;
 use Doctrine\DBAL\DriverManager;
 use Twig\Environment;
 
+// маршруты
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', 'App\Controller\NewsController');
     $r->addRoute('GET', '/news/{id:\d+}', 'App\Controller\NewsController');
@@ -39,16 +40,14 @@ switch ($routeInfo[0]) {
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed
         break;
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
 
+        // пишем в DI, то что необходимо в дальнейшем
         $di = new Container();
-
-        $di['db'] = DriverManager::getConnection($conf['app']);
-
+        $di['db'] = DriverManager::getConnection($dbParams);
         $loader = new FilesystemLoader(__DIR__ . '/../templates');
         $di['twig'] = new Environment($loader);
 

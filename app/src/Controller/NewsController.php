@@ -18,11 +18,13 @@ class NewsController extends BaseController
 
     public function exec(array $args = []): void
     {
+        // если есть ID, то отображаем одну новость
         if (isset($args['id'])) {
             $this->single((int)$args['id']);
             return;
         }
 
+        // если ID нет, то выводим все новости
         $this->all();
     }
 

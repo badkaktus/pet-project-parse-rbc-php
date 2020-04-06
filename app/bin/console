@@ -6,13 +6,13 @@ use Symfony\Component\Console\Application;
 use \App\Command\ParseNewsCommand;
 use Pimple\Container;
 
-$conf = require __DIR__ . '/../config/db.php';
+$dbParams = require __DIR__ . '/../config/db.php';
 
 $app = new Application();
 
 $di = new Container();
 
-$di['db'] = \Doctrine\DBAL\DriverManager::getConnection($conf['cli']);
+$di['db'] = \Doctrine\DBAL\DriverManager::getConnection($dbParams);
 
 $app->addCommands([
         new ParseNewsCommand($di)

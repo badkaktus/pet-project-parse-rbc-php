@@ -14,7 +14,7 @@ use Doctrine\Migrations\Tools\Console\Helper\ConfigurationHelper;
 
 
 $dbParams = require __DIR__ . '/../config/db.php';
-$connection = DriverManager::getConnection($dbParams['cli']);
+$connection = DriverManager::getConnection($dbParams);
 
 $configuration = new Configuration($connection);
 $configuration->setName('RBC Parser Migrations');
